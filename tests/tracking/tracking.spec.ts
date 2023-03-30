@@ -4,12 +4,42 @@ import ship24 from "./ship24.spec";
 import mercadoLivre from "./mercado-livre.spec";
 import * as fs from "fs/promises";
 import aliExpress from "./aliexpress.spec";
+import xlsx from "json-as-xlsx"
 
 export interface Products {
   title: string;
   code: string;
   time?: string;
   message?: string;
+}
+
+function saveAsXSLX(content) {
+  const data = [
+    {
+      sheet: "Rastreamento",
+      columns: [
+        { label: "Titulo", value: "title" },
+        { label: "Código", value: "code" },
+        { label: "Horário", value: (row) => row.time || 'Não encontrado' },
+        { label: "Mensagem", value: (row) => row.message || 'Não encontrado' },
+      ],
+      content,
+    }
+  ]
+
+  const today = new Date();
+  const utcString = today.valueOf();
+
+  const settings = {
+    fileName: `Rastreios ${utcString}`,
+    extraLength: 3,
+    writeMode: "WriteFile",
+    RTL: true,
+  }
+
+  xlsx(data, settings);
+
+  return utcString;
 }
 
 test("tracking", async ({ browser }) => {
@@ -49,16 +79,47 @@ test("tracking", async ({ browser }) => {
 
     const trackings = [...trackedInTracknet, ...trackingsShip24];
 
-    const data = JSON.stringify(trackings);
-    await fs.writeFile("trackings.json", data);
-    console.log("Rastreamentos salvos no trackings.json");
+    const handleTrackings = trackings.map((tracking) => {
+      if (tracking.message) {
+        return tracking;
+      }
+
+      return {
+        title: tracking.title,
+        code: tracking.code,
+        message: '',
+        time: ''
+      }
+    })
+
+    const utcString = saveAsXSLX(handleTrackings);
+    console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
+    // const data = JSON.stringify(handleTrackings);
+    // await fs.writeFile("trackings.json", data);
+
 
     return await browser.close();
   }
 
-  const data = JSON.stringify(trackingsTracknet);
-  await fs.writeFile("trackings.json", data);
-  console.log("Rastreamentos salvos no trackings.json");
+  const handleTrackings = trackingsTracknet.map((tracking) => {
+    if (tracking.message) {
+      return tracking;
+    }
+
+    return {
+      title: tracking.title,
+      code: tracking.code,
+      message: '',
+      time: ''
+    }
+  })
+
+
+  const utcString = saveAsXSLX(handleTrackings);
+  console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
+  // const data = JSON.stringify(handleTrackings);
+  // await fs.writeFile("trackings.json", data);
+  // console.log("Rastreamentos salvos no trackings.json");
 
   await browser.close();
 });
