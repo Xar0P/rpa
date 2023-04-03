@@ -1,11 +1,47 @@
 import { Browser, ElementHandle, Page, test } from "@playwright/test";
 import * as fs from "fs";
+import * as dotenv from 'dotenv';
+import { execSync } from "child_process";
+dotenv.config();
 
 interface Shipping {
   title: string | undefined;
   message: string | undefined;
   time: string | undefined;
   code: string | undefined;
+}
+
+async function verifyIfIsLogged(page: Page) {
+
+  const isLogged = await page.locator('#user_id').count();
+  if (isLogged > 0) {
+    console.log('É necessário logar no mercado livre'); // Tentar fazer algo para pegar os cookies dele dps
+    await login(page);
+  }
+}
+
+async function login(page: Page) {
+  try {
+    console.log('Aguardando bitwarden');
+    const stringAccount = execSync(`bw get item ${process.env.MERCADOLIVRE_ID} --session ${process.env.SESSION}`).toString();
+    const account = JSON.parse(stringAccount);
+
+    await page.getByTestId('user_id').click();
+    await page.getByTestId('user_id').fill(account.login.username);
+    await page.getByRole('button', { name: 'Continuar' }).click();
+
+    await page.getByTestId('password').dblclick();
+    await page.keyboard.type(account.login.password);
+
+    await page.getByTestId('action-complete').click();
+  } catch (error) {
+    console.error('Deu erro na autenticação do bitwarden, é necessário você mesmo logar no mercado livre!');
+    await page.goto(
+      "https://myaccount.mercadolivre.com.br/my_purchases/list#nav-header"
+    );
+    await page.pause();
+    return;
+  }
 }
 
 async function getLinkOfProducts(
@@ -101,6 +137,8 @@ export default async function mercadoLivre(browser: Browser) {
   await page.goto(
     "https://myaccount.mercadolivre.com.br/my_purchases/list#nav-header"
   );
+
+  await verifyIfIsLogged(page);
 
   const products = await getProducts(page);
   const links = await getLinkOfProducts(products);

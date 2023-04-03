@@ -28,10 +28,10 @@ function saveAsXSLX(content) {
   ]
 
   const today = new Date();
-  const utcString = today.valueOf();
+  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}_${today.toLocaleTimeString().replace(/:/g, ".")}`
 
   const settings = {
-    fileName: `Rastreios ${utcString}`,
+    fileName: `G:\\.shortcut-targets-by-id\\1-lkork0_DFuhDI-Ened3syey2-51Qeha\\ETCETERA GERAL\\Rastreamentos\\Rastreios_${date}`,
     extraLength: 3,
     writeMode: "WriteFile",
     RTL: true,
@@ -39,7 +39,22 @@ function saveAsXSLX(content) {
 
   xlsx(data, settings);
 
-  return utcString;
+  return date;
+}
+
+function handleTrackings(trackings) {
+  return trackings.map((tracking) => {
+    if (tracking.message) {
+      return tracking;
+    }
+
+    return {
+      title: tracking.title,
+      code: tracking.code,
+      message: '',
+      time: ''
+    }
+  })
 }
 
 test("tracking", async ({ browser }) => {
@@ -79,47 +94,14 @@ test("tracking", async ({ browser }) => {
 
     const trackings = [...trackedInTracknet, ...trackingsShip24];
 
-    const handleTrackings = trackings.map((tracking) => {
-      if (tracking.message) {
-        return tracking;
-      }
-
-      return {
-        title: tracking.title,
-        code: tracking.code,
-        message: '',
-        time: ''
-      }
-    })
-
-    const utcString = saveAsXSLX(handleTrackings);
+    const utcString = saveAsXSLX(handleTrackings(trackings));
     console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
-    // const data = JSON.stringify(handleTrackings);
-    // await fs.writeFile("trackings.json", data);
-
 
     return await browser.close();
   }
 
-  const handleTrackings = trackingsTracknet.map((tracking) => {
-    if (tracking.message) {
-      return tracking;
-    }
-
-    return {
-      title: tracking.title,
-      code: tracking.code,
-      message: '',
-      time: ''
-    }
-  })
-
-
-  const utcString = saveAsXSLX(handleTrackings);
+  const utcString = saveAsXSLX(handleTrackings(trackingsTracknet));
   console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
-  // const data = JSON.stringify(handleTrackings);
-  // await fs.writeFile("trackings.json", data);
-  // console.log("Rastreamentos salvos no trackings.json");
 
   await browser.close();
 });

@@ -3,3 +3,5 @@ node_modules/
 /playwright-report/
 /playwright/.cache/
 .env
+aliexpress.json
+mercado-livre.json
