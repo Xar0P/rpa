@@ -130,7 +130,7 @@ export default async function mercadoLivre(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      "C:\\Users\\1\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\unx78bey.default-default"
+      process.env.PROFILE as string
     );
 
   const page = await firefox.newPage();

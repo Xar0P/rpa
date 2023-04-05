@@ -46,7 +46,7 @@ export default async function aliExpress(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      "C:\\Users\\1\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\unx78bey.default-default"
+      process.env.PROFILE as string
     );
   const page = await firefox.newPage();
   await page.goto("https://www.aliexpress.com/p/order/index.html");

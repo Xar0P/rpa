@@ -2,13 +2,17 @@
 set currentPath=%cd%
 
 cd %USERPROFILE%\AppData\Local\ms-playwright\firefox*\firefox
-start firefox.exe https://mercadolivre.com.br https://login.aliexpress.com/
+start firefox.exe -p https://google.com https://mercadolivre.com.br https://login.aliexpress.com/
 PAUSE
 
 cd %currentPath%
 cd ..\..
 
-echo PROFILE=%USERPROFILE%\AppData\Roaming\Mozilla\Firefox\Profiles\*default-default > .env
+cd %USERPROFILE%\AppData\Roaming\Mozilla\Firefox\Profiles\*pw
+@set profilePath=%cd%
+cd %currentPath%
+cd ..\..
+echo PROFILE=%profilePath% > .env
 
 echo Digite o email do mercado livre
 @set /p ML_LOGIN=
