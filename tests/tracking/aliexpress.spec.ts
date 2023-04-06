@@ -1,6 +1,5 @@
 import { Browser, Page, test } from "@playwright/test";
 import * as fs from "fs";
-import { exec, execSync } from "child_process";
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -24,19 +23,17 @@ async function verifyIfIsLogged(page: Page) {
 
 async function login(page: Page) {
   try {
-    console.log('Aguardando bitwarden');
-    const stringAccount = execSync(`bw get item ${process.env.ALIEXPRESS_ID} --session ${process.env.SESSION}`).toString();
-    const account = JSON.parse(stringAccount);
-
+    console.log('Tentando logar no aliexpress');
     await page.locator('#fm-login-id').click();
-    await page.locator('#fm-login-id').fill(account.login.username);
+    await page.locator('#fm-login-id').fill(process.env.ALX_LOGIN);
 
     await page.locator('#fm-login-password').click();
-    await page.locator('#fm-login-password').fill(account.login.password);
+    await page.locator('#fm-login-password').fill(process.env.ALX_PASS);
 
     await page.locator('button[type = submit]').click();
   } catch (error) {
-    console.error('Deu erro na autenticação do bitwarden, é necessário você mesmo logar no aliexpress!');
+    console.error('Ocorreu algum erro, é necessário você mesmo logar no aliexpress!');
+    await page.goto("https://www.aliexpress.com/p/order/index.html");
     await page.pause();
     return;
   }
@@ -46,7 +43,7 @@ export default async function aliExpress(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      process.env.PROFILE as string
+      process.env.PROFILE
     );
   const page = await firefox.newPage();
   await page.goto("https://www.aliexpress.com/p/order/index.html");

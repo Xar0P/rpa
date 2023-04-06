@@ -1,7 +1,6 @@
 import { Browser, ElementHandle, Page, test } from "@playwright/test";
 import * as fs from "fs";
 import * as dotenv from 'dotenv';
-import { execSync } from "child_process";
 dotenv.config();
 
 interface Shipping {
@@ -22,20 +21,17 @@ async function verifyIfIsLogged(page: Page) {
 
 async function login(page: Page) {
   try {
-    console.log('Aguardando bitwarden');
-    const stringAccount = execSync(`bw get item ${process.env.MERCADOLIVRE_ID} --session ${process.env.SESSION}`).toString();
-    const account = JSON.parse(stringAccount);
-
+    console.log('Tentando logar no mercado livre');
     await page.getByTestId('user_id').click();
-    await page.getByTestId('user_id').fill(account.login.username);
+    await page.getByTestId('user_id').fill(process.env.ML_LOGIN);
     await page.getByRole('button', { name: 'Continuar' }).click();
 
     await page.getByTestId('password').dblclick();
-    await page.keyboard.type(account.login.password);
+    await page.keyboard.type(process.env.ML_PASS);
 
     await page.getByTestId('action-complete').click();
   } catch (error) {
-    console.error('Deu erro na autenticação do bitwarden, é necessário você mesmo logar no mercado livre!');
+    console.error('Ocorreu algum erro, é necessário você mesmo logar no mercado livre!');
     await page.goto(
       "https://myaccount.mercadolivre.com.br/my_purchases/list#nav-header"
     );
@@ -130,7 +126,7 @@ export default async function mercadoLivre(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      process.env.PROFILE as string
+      process.env.PROFILE
     );
 
   const page = await firefox.newPage();
