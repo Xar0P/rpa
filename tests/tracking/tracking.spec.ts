@@ -4,7 +4,7 @@ import ship24 from "./ship24.spec";
 import mercadoLivre from "./mercado-livre.spec";
 import * as fs from "fs/promises";
 import aliExpress from "./aliexpress.spec";
-import xlsx from "json-as-xlsx"
+import Excel from 'exceljs'
 
 export interface Products {
   title: string;
@@ -14,32 +14,19 @@ export interface Products {
 }
 
 function saveAsXSLX(content) {
-  const data = [
-    {
-      sheet: "Rastreamento",
-      columns: [
-        { label: "Titulo", value: "title" },
-        { label: "Código", value: "code" },
-        { label: "Horário", value: (row) => row.time || 'Não encontrado' },
-        { label: "Mensagem", value: (row) => row.message || 'Não encontrado' },
-      ],
-      content,
+  const googleDriveUrl = 'G:\\.shortcut-targets-by-id\\1-lkork0_DFuhDI-Ened3syey2-51Qeha\\ETCETERA GERAL\\Rastreamentos\\Rastreios.xlsx'
+
+  const workbook = new Excel.Workbook();
+
+  workbook.xlsx.readFile(googleDriveUrl).then(() => {
+    const sheet = workbook.getWorksheet('Rastreamento')
+
+    for (const track of content) {
+      const row = sheet.addRow([track.title, track.code, track.time || "Não encontrado", track.message || 'Não encontrado', new Date().toLocaleString()])
+      row.commit();
     }
-  ]
-
-  const today = new Date();
-  const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}_${today.toLocaleTimeString().replace(/:/g, ".")}`
-
-  const settings = {
-    fileName: `G:\\.shortcut-targets-by-id\\1-lkork0_DFuhDI-Ened3syey2-51Qeha\\ETCETERA GERAL\\Rastreamentos\\Rastreios_${date}`,
-    extraLength: 3,
-    writeMode: "WriteFile",
-    RTL: true,
-  }
-
-  xlsx(data, settings);
-
-  return date;
+    return workbook.xlsx.writeFile(googleDriveUrl);
+  })
 }
 
 function handleTrackings(trackings) {
@@ -94,14 +81,14 @@ test("tracking", async ({ browser }) => {
 
     const trackings = [...trackedInTracknet, ...trackingsShip24];
 
-    const utcString = saveAsXSLX(handleTrackings(trackings));
-    console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
+    saveAsXSLX(handleTrackings(trackings));
+    console.log(`Rastreios salvos no Rastreios.xlsx`);
 
     return await browser.close();
   }
 
-  const utcString = saveAsXSLX(handleTrackings(trackingsTracknet));
-  console.log(`Rastreamentos salvos no Rastreamentos ${utcString}.xlsx`);
+  saveAsXSLX(handleTrackings(trackingsTracknet));
+  console.log(`Rastreios salvos no Rastreios.xlsx`);
 
   await browser.close();
 });
