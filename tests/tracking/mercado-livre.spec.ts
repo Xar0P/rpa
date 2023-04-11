@@ -23,11 +23,11 @@ async function login(page: Page) {
   try {
     console.log('Tentando logar no mercado livre');
     await page.getByTestId('user_id').click();
-    await page.getByTestId('user_id').fill(process.env.ML_LOGIN);
+    await page.getByTestId('user_id').fill(process.env.ML_LOGIN as string);
     await page.getByRole('button', { name: 'Continuar' }).click();
 
     await page.getByTestId('password').dblclick();
-    await page.keyboard.type(process.env.ML_PASS);
+    await page.keyboard.type(process.env.ML_PASS as string);
 
     await page.getByTestId('action-complete').click();
   } catch (error) {
@@ -126,7 +126,7 @@ export default async function mercadoLivre(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      process.env.PROFILE
+      process.env.PROFILE as string
     );
 
   const page = await firefox.newPage();

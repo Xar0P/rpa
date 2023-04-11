@@ -25,10 +25,10 @@ async function login(page: Page) {
   try {
     console.log('Tentando logar no aliexpress');
     await page.locator('#fm-login-id').click();
-    await page.locator('#fm-login-id').fill(process.env.ALX_LOGIN);
+    await page.locator('#fm-login-id').fill(process.env.ALX_LOGIN as string);
 
     await page.locator('#fm-login-password').click();
-    await page.locator('#fm-login-password').fill(process.env.ALX_PASS);
+    await page.locator('#fm-login-password').fill(process.env.ALX_PASS as string);
 
     await page.locator('button[type = submit]').click();
   } catch (error) {
@@ -43,7 +43,7 @@ export default async function aliExpress(browser: Browser) {
   const firefox = await browser
     .browserType()
     .launchPersistentContext(
-      process.env.PROFILE
+      process.env.PROFILE as string
     );
   const page = await firefox.newPage();
   await page.goto("https://www.aliexpress.com/p/order/index.html");

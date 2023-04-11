@@ -3,10 +3,8 @@ import { Products } from "./tracking.spec";
 
 async function loading(page: Page) {
   const loader = page.locator(".animsition-loading");
-  console.log("Carregando");
-  while ((await loader.count()) > 0) {
-    console.log("Carregando dentro");
-  }
+  console.log("Carregando...");
+  while ((await loader.count()) > 0) { }
   console.log("Carregamento finalizado");
 }
 

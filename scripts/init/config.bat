@@ -2,7 +2,7 @@
 set currentPath=%cd%
 
 cd %USERPROFILE%\AppData\Local\ms-playwright\firefox*\firefox
-start firefox.exe -p https://google.com https://mercadolivre.com.br https://login.aliexpress.com/
+start firefox.exe -p https://google.com https://mercadolivre.com.br https://login.aliexpress.com/ https://www.alibaba.com/
 PAUSE
 
 cd %currentPath%
@@ -30,16 +30,16 @@ echo Digite a senha do aliexpress
 @set /p ALX_PASS=
 echo ALX_PASS=%ALX_PASS% >> .env
 
-echo Digite o email do alibaba
-@set /p ALBB_LOGIN=
-echo ALBB_LOGIN=%ALBB_LOGIN% >> .env
+@REM echo Digite o email do alibaba
+@REM @set /p ALBB_LOGIN=
+@REM echo ALBB_LOGIN=%ALBB_LOGIN% >> .env
 
-echo Digite a senha do alibaba
-@set /p ALBB_PASS=
-echo ALBB_PASS=%ALBB_PASS% >> .env
+@REM echo Digite a senha do alibaba
+@REM @set /p ALBB_PASS=
+@REM echo ALBB_PASS=%ALBB_PASS% >> .env
 
-echo Digite o totp do alibaba
-@set /p ALBB_TOTP=
-echo ALBB_TOTP=%ALBB_TOTP% >> .env
+@REM echo Digite o totp do alibaba
+@REM @set /p ALBB_TOTP=
+@REM echo ALBB_TOTP=%ALBB_TOTP% >> .env
 
 echo Configurado com sucesso!
