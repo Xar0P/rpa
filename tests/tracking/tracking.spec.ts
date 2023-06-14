@@ -3,7 +3,8 @@ import tracknet from "./tracknet.spec";
 import ship24 from "./ship24.spec";
 import mercadoLivre from "./mercado-livre.spec";
 import * as fs from "fs/promises";
-import { existsSync } from "fs";
+import { existsSync, unlinkSync } from "fs";
+import { resolve } from 'path'
 import aliExpress from "./aliexpress.spec";
 import Excel from 'exceljs'
 import * as dotenv from 'dotenv';
@@ -78,6 +79,16 @@ test("tracking", async ({ browser }) => {
   const mercadolivreObjString = await fs.readFile("mercado-livre.json", "utf8");
   const mercadolivreProducts = JSON.parse(mercadolivreObjString);
 
+  const aliFile = resolve('aliexpress.json')
+  const mercadoFile = resolve('mercado-livre.json')
+
+  if (existsSync(aliFile)) {
+    unlinkSync(aliFile)
+  }
+  if (existsSync(mercadoFile)) {
+    unlinkSync(mercadoFile)
+  }
+
   const products = <Products[]>[...aliexpressProducts, ...mercadolivreProducts];
 
   const pageTracknet = await browser.newPage();
@@ -108,6 +119,9 @@ test("tracking", async ({ browser }) => {
 
   saveAsXSLX(handleTrackings(trackingsTracknet));
   console.log(`Rastreios salvos no Rastreios.xlsx`);
+
+
+
 
   await browser.close();
 });
