@@ -46,8 +46,8 @@ async function getLinkOfProducts(
   const links = <string[]>[];
 
   for (const el of products) {
-    const elem = await el.$("xpath=.. >> .. >> ..");
-    const tagLink = await elem?.$("a");
+    const elem: any = await el.$("xpath=.. >> .. >> ..");
+    const tagLink = await elem?.$("div.bf-ui-button-container a");
     const link = await tagLink?.getAttribute("href");
 
     if (link) {
@@ -138,7 +138,6 @@ export default async function mercadoLivre(browser: Browser) {
 
   const products = await getProducts(page);
   const links = await getLinkOfProducts(products);
-
   const shippings = <Shipping[]>[];
 
   for (const link of links) {
