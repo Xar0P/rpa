@@ -14,6 +14,10 @@ cd %currentPath%
 cd ..\..
 echo PROFILE=%profilePath% > .env
 
+echo Digite o caminho que você quer salvar o arquivo
+@set /p DIR_SAVE=
+echo DIR_SAVE=%DIR_SAVE%\Rastreios.xlsx >> .env
+
 echo Digite o email do mercado livre
 @set /p ML_LOGIN=
 echo ML_LOGIN=%ML_LOGIN% >> .env

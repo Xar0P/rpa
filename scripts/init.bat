@@ -13,5 +13,4 @@ call install-firefox.bat
 cd %initPath%
 call config.bat
 
-echo Ola
 pause
