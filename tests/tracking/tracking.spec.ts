@@ -91,37 +91,38 @@ test("tracking", async ({ browser }) => {
 
   const products = <Products[]>[...aliexpressProducts, ...mercadolivreProducts];
 
-  const pageTracknet = await browser.newPage();
-  await pageTracknet.bringToFront();
-  console.log("Esperando tracknet");
-  const trackingsTracknet = await tracknet(pageTracknet, products);
+  if (products.length !== 0) {
+    const pageTracknet = await browser.newPage();
+    await pageTracknet.bringToFront();
+    console.log("Esperando tracknet");
+    const trackingsTracknet = await tracknet(pageTracknet, products);
 
-  const trackedInTracknet = trackingsTracknet.filter((track) => track.message);
-  const notTracked: any = trackingsTracknet.filter((track) => !track.message);
+    const trackedInTracknet = trackingsTracknet.filter((track) => track.message);
+    const notTracked: any = trackingsTracknet.filter((track) => !track.message);
 
-  if (notTracked.length > 0) {
-    console.log(
-      `Códigos ${notTracked.map(
-        (track) => track.code
-      )} não foram encontrados no tracknet`
-    );
-    console.log("Esperando ship24");
-    const pageShip24 = await browser.newPage();
-    const trackingsShip24 = await ship24(pageShip24, notTracked);
+    if (notTracked.length > 0) {
+      console.log(
+        `Códigos ${notTracked.map(
+          (track) => track.code
+        )} não foram encontrados no tracknet`
+      );
+      console.log("Esperando ship24");
+      const pageShip24 = await browser.newPage();
+      const trackingsShip24 = await ship24(pageShip24, notTracked);
 
-    const trackings = [...trackedInTracknet, ...trackingsShip24];
+      const trackings = [...trackedInTracknet, ...trackingsShip24];
 
-    saveAsXSLX(handleTrackings(trackings));
+      saveAsXSLX(handleTrackings(trackings));
+      console.log(`Rastreios salvos no Rastreios.xlsx`);
+
+      return await browser.close();
+    }
+
+    saveAsXSLX(handleTrackings(trackingsTracknet));
     console.log(`Rastreios salvos no Rastreios.xlsx`);
-
-    return await browser.close();
+  } else {
+    console.log(`Não foi encontrado nenhum produto em entrega`)
   }
-
-  saveAsXSLX(handleTrackings(trackingsTracknet));
-  console.log(`Rastreios salvos no Rastreios.xlsx`);
-
-
-
 
   await browser.close();
 });
